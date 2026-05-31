@@ -1,0 +1,36 @@
+# Docker public searXNG instance.
+server {
+    listen 80;
+    listen [::]:80;
+
+    server_name searx.rajimayur.me;
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+
+    ssl_certificate /etc/letsencrypt/live/searx.rajimayur.me/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/searx.rajimayur.me/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+	add_header Content-Security-Policy "default-src 'self'; img-src 'self' rajimayur.me";
+	add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload";
+	add_header Referrer-Policy "no-referrer";
+	add_header X-Content-Type-Options nosniff;
+	add_header X-Frame-Options SAMEORIGIN;
+
+    server_name searx.rajimayur.me;
+
+	location / {
+		proxy_set_header Host $host;
+		proxy_set_header X-Real-IP $remote_addr;
+		proxy_set_header X-Http-Version $server_protocol;
+		proxy_connect_timeout 20s;
+		proxy_pass http://searxng-core:8000;
+	}
+}
