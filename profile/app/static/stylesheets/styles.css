@@ -1,0 +1,240 @@
+@font-face {
+    font-family: 'JetBrains Mono';
+    src: url('../fonts/JetBrainsMono-Bold.woff2') format('woff2');
+    font-weight: 700;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'JetBrains Mono', monospace;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow-y: auto;
+    overflow-x: hidden;
+    color: greenyellow;
+    padding: 100px 20px 100px 20px;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: right center;
+    opacity: 1;
+    z-index: -1;
+    background-color: black;
+}
+
+header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    text-align: center;
+    padding: 20px;
+    font-size: 28px;
+    color: greenyellow;
+    margin-bottom: 2rem;
+    z-index: 100;
+    font-weight: 900;
+}
+
+footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    padding: 20px;
+    font-size: 1.2rem;
+    margin-top: 30px;
+    color: greenyellow;
+    z-index: 100;
+}
+
+/* Card styling */
+.first-card {
+    background-color: rgba(0, 0, 0, 0.7);
+    border: 2px solid #00ffff;
+    border-radius: 12px;
+    padding: 30px;
+    margin-bottom: 30px;
+    margin-top: 80px;
+    max-width: 600px;
+    width: 100%;
+}
+.card {
+    background-color: rgba(0, 0, 0, 0.7);
+    border: 3px solid #00ffff;
+    border-radius: 12px;
+    padding: 30px;
+    margin-bottom: 30px;
+    margin-top: 35px;
+    max-width: 100rem;
+    width: 100%;
+}
+
+.card .title {
+    margin-bottom: 20px;
+}
+
+.card .title h2 {
+    display: inline-block;
+    margin-right: 15px;
+    font-size: 1.5rem;
+}
+
+.card .title .muted {
+    color: rgba(173, 255, 47, 0.6);
+    font-size: 0.9rem;
+}
+
+.card p {
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.card .post-item {
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+}
+
+.card .post-item:last-child {
+    border-bottom: none;
+}
+
+.card .post-item a {
+    display: inline;
+    padding: 0;
+    background-color: transparent;
+    color: greenyellow;
+    text-decoration: none;
+    margin-top: 0px;
+    margin-right: 10px;
+}
+
+.card .post-item a:hover {
+    text-decoration: underline;
+    background-color: transparent;
+}
+
+.card .post-meta {
+    display: inline-block;
+    color: rgba(173, 255, 47, 0.5);
+    font-size: 0.85rem;
+}
+
+.btn {
+    display: inline-block;
+    margin-top: 20px;
+    margin-right: 15px;
+    padding: 12px 40px;
+    background-color: #3498db;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 16px;
+    font-family: 'JetBrains Mono';
+    transition: background-color 0.3s;
+    border: none;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+    border: none;
+}
+
+.btn.primary {
+    background-color: #00ffff;
+    color: black;
+}
+
+.btn.primary:hover {
+    background-color: rgba(0, 255, 255, 0.8);
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+#searx-form {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+#searx-form input {
+    flex: 1;
+    padding: 0.7rem 0.6rem;
+    border-radius: 8px;
+    border: 1px solid #00ffff;
+    font-family: 'JetBrains Mono', monospace;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: greenyellow;
+    font-size: 0.95rem;
+}
+
+#searx-form input::placeholder {
+    color: rgba(173, 255, 47, 0.5);
+}
+
+#searx-form input:focus {
+    outline: none;
+    border-color: #00ffff;
+}
+
+footer a {
+    display: inline-block;
+    margin: 0 10px;
+    padding: 10px 20px;
+    background-color: transparent;
+    color: greenyellow;
+    text-decoration: none;
+    border: 1px solid greenyellow;
+    border-radius: 8px;
+    transition: all 0.3s;
+}
+
+footer a:hover {
+    background-color: greenyellow;
+    color: black;
+}
+
+@media (orientation: portrait) {
+    header {
+        font-size: 1rem;
+    }
+
+    .card {
+        padding: 20px;
+        max-width: 95%;
+    }
+
+    .btn {
+        font-size: 14px;
+        padding: 10px 30px;
+    }
+
+    #searx-form {
+        flex-direction: column;
+    }
+
+    #searx-form input {
+        width: 100%;
+    }
+}
