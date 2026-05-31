@@ -1,0 +1,59 @@
+# SEARXNG PUBLIC INSTANCE
+services:
+  anubis_searxng:
+    image: ghcr.io/techarohq/anubis:latest
+    container_name: anubis_searxng
+    restart: unless-stopped
+    environment:
+      DIFFICULTY: "5"
+      SERVE_ROBOTS_TXT: "true"
+      TARGET: "http://searxng-core:8000"
+      POLICY_FNAME: "/data/cfg/botPolicy.yml"
+      OG_PASSTHROUGH: "true"
+      OG_EXPIRY_TIME: "24h"
+    healthcheck:
+      test: ["CMD", "anubis", "--healthcheck"]
+      interval: 5s
+      timeout: 30s
+      retries: 5
+      start_period: 500ms
+    networks:
+      - proxy_mother
+    volumes:
+      - "./botPolicy.yml:/data/cfg/botPolicy.yml:ro"
+      - "./anubis-data:/data"
+
+  searxng-core:
+    container_name: searxng-core
+    image: docker.io/searxng/searxng:${SEARXNG_VERSION:-latest}
+    restart: unless-stopped
+    env_file: ./.env
+    volumes:
+      - ./core-config/:/etc/searxng/:Z
+      - ./core-data:/var/cache/searxng/
+    # Limit resources, python complains about having just 1 vcpu.
+    deploy:
+      resources:
+        limits:
+          cpus: 1
+          memory: 512MB
+    networks:
+      - proxy_mother
+
+  searxng-valkey:
+    container_name: searxng-valkey
+    image: docker.io/valkey/valkey:9-alpine
+    entrypoint: valkey-server --save 30 1 --loglevel warning
+    restart: unless-stopped
+    volumes:
+      - valkey-data:/data/
+      - "./valkey.conf:/etc/sysctl.conf"
+    networks:
+      - proxy_mother
+
+volumes:
+  valkey-data:
+
+networks:
+  proxy_mother:
+    external: true

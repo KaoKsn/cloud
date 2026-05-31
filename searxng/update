@@ -1,0 +1,14 @@
+#!/usr/bin/bash
+
+printf "Pulling the latest and the greatest......\n"
+docker compose pull core valkey
+
+printf "Restarting...\n"
+docker compose down && docker compose up -d
+
+if [ "$?" -eq 0 ]; then
+    echo -e "\e[1;32mSuccess\e[0m"
+else
+    echo -e "\e[1;31m***(Something failed during build)***\e[0m"
+    exit 1
+fi

@@ -1,0 +1,5 @@
+*.env
+core-config/*.env
+anubis-data/
+core-data/
+core-config/settings.yml.*
