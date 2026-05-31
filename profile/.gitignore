@@ -1,0 +1,6 @@
+/app
+/var
+*.env
+*.env.*
+./*/*.env.*
+postgres-data/

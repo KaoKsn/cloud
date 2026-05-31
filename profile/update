@@ -1,0 +1,15 @@
+#!/usr/bin/bash
+
+printf "Rebuilding the image......\n"
+docker buildx build . --tag homepage
+
+if [ "$?" -eq 0 ]; then
+    echo -e "\e[1;32mSuccess\e[0m"
+else
+    echo -e "\e[1;31m***(Something failed during build)***\e[0m"
+    exit 1
+fi
+
+printf "\nRestarting the service......\n"
+docker compose down && docker compose up -d
+echo -e "\e[1;32mSuccess\e[0m"
