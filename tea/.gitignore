@@ -1,0 +1,4 @@
+*-data/
+gitea-config/
+gitea-data/
+postgres-db-data/
