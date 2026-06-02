@@ -22,6 +22,13 @@ services:
     volumes:
       - "./botPolicy.yml:/data/cfg/botPolicy.yml:ro"
       - "./anubis-data:/data"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.searxng.rule=Host(`searx.rajimayur.me`)"
+      - "traefik.http.routers.searxng.entrypoints=websecure"
+      - "traefik.http.routers.searxng.tls=true"
+      - "traefik.http.routers.searxng.tls.certresolver=letsencrypt"
+      - "traefik.http.services.searxng.loadbalancer.server.port=8923"
 
   searxng-core:
     container_name: searxng-core

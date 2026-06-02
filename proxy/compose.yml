@@ -1,21 +1,62 @@
 services:
-  revproxy:
-    image: nginx:latest
-    container_name: nginx_proxy
-    labels:
-      com.description: "Nginx reverse proxy, listen on 80/443 and proxy pass to containers in the network"
-      com.maintainer: "libremaintainer@proton.me"
+  proxy:
+    image: traefik:latest
+    container_name: proxy
+    restart: always
     ports:
       - "80:80"
       - "443:443"
-    restart: always
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      # named volume mount for traefik to store the certificates.
+      - traefik-certs:/letsencrypt
+      - "./var/:/var/log/traefik/"
+    command:
+      # Providers
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.network=proxy_mother"
+
+      # EntryPoints
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.websecure.http.tls=true"
+
+      # API & Dashboard
+      - "--api.dashboard=true"
+      # Observability & logging
+      - "--log.level=INFO"
+      - "--log.filePath=/var/log/traefik/traefik.log"
+      - "--accesslog=true"
+      - "--accesslog.filePath=/var/log/traefik/access.log"
+
+        # Certificates
+      - "--certificatesresolvers.letsencrypt.acme.tlschallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.email=libremaintainer@proton.me"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+
+    # Traefik Dynamic configuration via Docker labels
+    labels:
+      # Enable self‑routing (Dashboard)
+      - "traefik.enable=true"
+      - "traefik.http.routers.dashboard.rule=Host(`proxy.rajimayur.me`)"
+      - "traefik.http.routers.dashboard.entrypoints=websecure"
+      - "traefik.http.routers.dashboard.service=api@internal"
+      - "traefik.http.routers.dashboard.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.dashboard.tls=true"
+      # Basic‑auth middleware
+      - "traefik.http.middlewares.dashboard-auth.basicauth.users=admin:$2a$10$4u6Gl8Yxjs2WyHEPGDeFBOottuPco54redvsb8wa80dWlOm.7qGpm"
+      - "traefik.http.routers.dashboard.middlewares=dashboard-auth@docker"
     networks:
       - mother
-    volumes:
-      - "./nginx/mime.types:/etc/nginx/mime.types"
-      - "./nginx/nginx.conf:/etc/nginx/nginx.conf"
-      - "/etc/letsencrypt:/etc/letsencrypt:ro"
-      - "./var/log/nginx:/var/log/nginx:rw"
+
+volumes:
+  traefik-certs:
 
 networks:
   mother:

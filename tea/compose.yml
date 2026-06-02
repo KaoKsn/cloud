@@ -16,6 +16,13 @@ services:
       timeout: 30s
       retries: 5
       start_period: 500ms
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.tea.rule=Host(`git.rajimayur.me`)"
+      - "traefik.http.routers.tea.entrypoints=websecure"
+      - "traefik.http.routers.tea.tls=true"
+      - "traefik.http.routers.tea.tls.certresolver=letsencrypt"
+      - "traefik.http.services.tea.loadbalancer.server.port=8923"
     networks:
       - proxy_mother
     volumes:

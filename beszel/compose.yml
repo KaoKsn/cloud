@@ -16,6 +16,13 @@ services:
       timeout: 30s
       retries: 5
       start_period: 500ms
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.beszel.rule=Host(`mon.rajimayur.me`)"
+      - "traefik.http.routers.beszel.entrypoints=websecure"
+      - "traefik.http.routers.beszel.tls=true"
+      - "traefik.http.routers.beszel.tls.certresolver=letsencrypt"
+      - "traefik.http.services.beszel.loadbalancer.server.port=8923"
     networks:
       - proxy_mother
     volumes:
