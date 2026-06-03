@@ -23,6 +23,16 @@ services:
       - "traefik.http.routers.beszel.tls=true"
       - "traefik.http.routers.beszel.tls.certresolver=letsencrypt"
       - "traefik.http.services.beszel.loadbalancer.server.port=8923"
+      - "traefik.http.routers.beszel.middlewares=headers-beszel@docker"
+      - "traefik.http.middlewares.headers-beszel.headers.stsSeconds=31536000"
+      - "traefik.http.middlewares.headers-beszel.headers.stsIncludeSubdomains=true"
+      - "traefik.http.middlewares.headers-beszel.headers.stsPreload=true"
+      - "traefik.http.middlewares.headers-beszel.headers.frameDeny=true"
+      - "traefik.http.middlewares.headers-beszel.headers.browserXssFilter=true"
+      - "traefik.http.middlewares.headers-beszel.headers.contentTypeNosniff=true"
+      - "traefik.http.middlewares.headers-beszel.headers.referrerPolicy=no-referrer"
+      - "traefik.http.middlewares.headers-beszel.headers.featurePolicy=accelerometer 'none'; autoplay 'none'; camera 'none'; encrypted-media 'none'; fullscreen 'self'; geolocation 'none'; gyroscope 'none'; magnetometer 'none'; microphone 'none'; payment 'none'; usb 'none'"
+      - "traefik.http.middlewares.headers-beszel.headers.customResponseHeaders.Content-Security-Policy=default-src 'self'; script-src 'self' 'unsafe-inline' https:; style-src 'self'; img-src 'self' data: https:; font-src 'self' data: https:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests;"
     networks:
       - proxy_mother
     volumes:

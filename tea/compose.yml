@@ -23,6 +23,16 @@ services:
       - "traefik.http.routers.tea.tls=true"
       - "traefik.http.routers.tea.tls.certresolver=letsencrypt"
       - "traefik.http.services.tea.loadbalancer.server.port=8923"
+      - "traefik.http.routers.tea.middlewares=headers-tea@docker"
+      - "traefik.http.middlewares.headers-tea.headers.stsSeconds=31536000"
+      - "traefik.http.middlewares.headers-tea.headers.stsIncludeSubdomains=true"
+      - "traefik.http.middlewares.headers-tea.headers.stsPreload=true"
+      - "traefik.http.middlewares.headers-tea.headers.frameDeny=true"
+      - "traefik.http.middlewares.headers-tea.headers.browserXssFilter=true"
+      - "traefik.http.middlewares.headers-tea.headers.contentTypeNosniff=true"
+      - "traefik.http.middlewares.headers-tea.headers.referrerPolicy=no-referrer"
+      - "traefik.http.middlewares.headers-tea.headers.featurePolicy=accelerometer 'none'; autoplay 'none'; camera 'none'; encrypted-media 'none'; fullscreen 'self'; geolocation 'none'; gyroscope 'none'; magnetometer 'none'; microphone 'none'; payment 'none'; usb 'none'"
+      - "traefik.http.middlewares.headers-tea.headers.customResponseHeaders.Content-Security-Policy=default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self'; img-src 'self' data: https:; font-src 'self' data: https:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests;"
     networks:
       - proxy_mother
     volumes:

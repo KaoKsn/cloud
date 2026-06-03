@@ -51,7 +51,17 @@ services:
       - "traefik.http.routers.dashboard.tls=true"
       # Basic‑auth middleware
       - "traefik.http.middlewares.dashboard-auth.basicauth.users=admin:$2a$10$4u6Gl8Yxjs2WyHEPGDeFBOottuPco54redvsb8wa80dWlOm.7qGpm"
-      - "traefik.http.routers.dashboard.middlewares=dashboard-auth@docker"
+      - "traefik.http.routers.dashboard.middlewares=dashboard-auth@docker,headers-dashboard@docker"
+      # Header Middleware
+      - "traefik.http.middlewares.headers-dashboard.headers.stsSeconds=31536000"
+      - "traefik.http.middlewares.headers-dashboard.headers.stsIncludeSubdomains=true"
+      - "traefik.http.middlewares.headers-dashboard.headers.stsPreload=true"
+      - "traefik.http.middlewares.headers-dashboard.headers.frameDeny=true"
+      - "traefik.http.middlewares.headers-dashboard.headers.browserXssFilter=true"
+      - "traefik.http.middlewares.headers-dashboard.headers.contentTypeNosniff=true"
+      - "traefik.http.middlewares.headers-dashboard.headers.referrerPolicy=no-referrer"
+      - "traefik.http.middlewares.headers-dashboard.headers.featurePolicy=accelerometer 'none'; autoplay 'none'; camera 'none'; encrypted-media 'none'; fullscreen 'self'; geolocation 'none'; gyroscope 'none'; magnetometer 'none'; microphone 'none'; payment 'none'; usb 'none'"
+      - "traefik.http.middlewares.headers-dashboard.headers.customResponseHeaders.Content-Security-Policy=default-src 'self'; script-src 'self' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:; font-src 'self' data: https:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests;"
     networks:
       - mother
 

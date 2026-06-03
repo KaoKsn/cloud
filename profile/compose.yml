@@ -23,6 +23,16 @@ services:
       - "traefik.http.routers.profile.tls=true"
       - "traefik.http.routers.profile.tls.certresolver=letsencrypt"
       - "traefik.http.services.profile.loadbalancer.server.port=8923"
+      - "traefik.http.routers.profile.middlewares=headers-profile@docker"
+      - "traefik.http.middlewares.headers-profile.headers.stsSeconds=31536000"
+      - "traefik.http.middlewares.headers-profile.headers.stsIncludeSubdomains=true"
+      - "traefik.http.middlewares.headers-profile.headers.stsPreload=true"
+      - "traefik.http.middlewares.headers-profile.headers.frameDeny=true"
+      - "traefik.http.middlewares.headers-profile.headers.browserXssFilter=true"
+      - "traefik.http.middlewares.headers-profile.headers.contentTypeNosniff=true"
+      - "traefik.http.middlewares.headers-profile.headers.referrerPolicy=no-referrer"
+      - "traefik.http.middlewares.headers-profile.headers.featurePolicy=accelerometer 'none'; autoplay 'none'; camera 'none'; encrypted-media 'none'; fullscreen 'self'; geolocation 'none'; gyroscope 'none'; magnetometer 'none'; microphone 'none'; payment 'none'; usb 'none'"
+      - "traefik.http.middlewares.headers-profile.headers.customResponseHeaders.Content-Security-Policy=default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self'; img-src 'self' data: https:; font-src 'self' data: https:; frame-ancestors 'none'; base-uri 'self'; form-action self https://searx.rajimayur.me; upgrade-insecure-requests;"
     networks:
       - proxy_mother
     depends_on:

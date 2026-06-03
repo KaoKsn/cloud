@@ -22,13 +22,6 @@ services:
     volumes:
       - "./botPolicy.yml:/data/cfg/botPolicy.yml:ro"
       - "./anubis-data:/data"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.searxng.rule=Host(`searx.rajimayur.me`)"
-      - "traefik.http.routers.searxng.entrypoints=websecure"
-      - "traefik.http.routers.searxng.tls=true"
-      - "traefik.http.routers.searxng.tls.certresolver=letsencrypt"
-      - "traefik.http.services.searxng.loadbalancer.server.port=8923"
 
   searxng-core:
     container_name: searxng-core
@@ -44,6 +37,24 @@ services:
         limits:
           cpus: 1
           memory: 512MB
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.searxng.rule=Host(`searx.rajimayur.me`)"
+      - "traefik.http.routers.searxng.entrypoints=websecure"
+      - "traefik.http.routers.searxng.tls=true"
+      - "traefik.http.routers.searxng.tls.certresolver=letsencrypt"
+      - "traefik.http.services.searxng.loadbalancer.server.port=8000"
+      # Headers Middleware
+      - "traefik.http.routers.searxng.middlewares=headers-searxng@docker"
+      - "traefik.http.middlewares.headers-searxng.headers.stsSeconds=31536000"
+      - "traefik.http.middlewares.headers-searxng.headers.stsIncludeSubdomains=true"
+      - "traefik.http.middlewares.headers-searxng.headers.stsPreload=true"
+      - "traefik.http.middlewares.headers-searxng.headers.frameDeny=true"
+      - "traefik.http.middlewares.headers-searxng.headers.browserXssFilter=true"
+      - "traefik.http.middlewares.headers-searxng.headers.contentTypeNosniff=true"
+      - "traefik.http.middlewares.headers-searxng.headers.referrerPolicy=no-referrer"
+      - "traefik.http.middlewares.headers-searxng.headers.featurePolicy=accelerometer 'none'; autoplay 'none'; camera 'none'; encrypted-media 'none'; fullscreen 'self'; geolocation 'none'; gyroscope 'none'; magnetometer 'none'; microphone 'none'; payment 'none'; usb 'none'"
+      - "traefik.http.middlewares.headers-searxng.headers.customResponseHeaders.Content-Security-Policy=default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: https:; upgrade-insecure-requests;"
     networks:
       - proxy_mother
 
