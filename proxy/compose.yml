@@ -63,10 +63,11 @@ services:
       - "traefik.http.middlewares.headers-dashboard.headers.featurePolicy=accelerometer 'none'; autoplay 'none'; camera 'none'; encrypted-media 'none'; fullscreen 'self'; geolocation 'none'; gyroscope 'none'; magnetometer 'none'; microphone 'none'; payment 'none'; usb 'none'"
       - "traefik.http.middlewares.headers-dashboard.headers.customResponseHeaders.Content-Security-Policy=default-src 'self'; script-src 'self' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:; font-src 'self' data: https:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests;"
     networks:
-      - mother
+      - proxy_mother
 
 volumes:
   traefik-certs:
 
 networks:
-  mother:
+  proxy_mother:
+    external: true
