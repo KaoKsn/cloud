@@ -1,0 +1,63 @@
+services:
+  umami:
+    image: ghcr.io/umami-software/umami:latest
+    container_name: umami
+    env_file: .env
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      APP_SECRET: ${APP_SECRET}
+    depends_on:
+      umami-db:
+        condition: service_healthy
+    init: true
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "curl http://localhost:3000/api/heartbeat"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.umami.rule=Host(`analytics.rajimayur.me`)"
+      - "traefik.http.routers.umami.entrypoints=websecure"
+      - "traefik.http.routers.umami.tls=true"
+      - "traefik.http.routers.umami.tls.certresolver=letsencrypt"
+      - "traefik.http.services.umami.loadbalancer.server.port=3000"
+      - "traefik.http.routers.umami.middlewares=headers-umami@docker"
+      - "traefik.http.middlewares.headers-umami.headers.stsSeconds=31536000"
+      - "traefik.http.middlewares.headers-umami.headers.stsIncludeSubdomains=true"
+      - "traefik.http.middlewares.headers-umami.headers.stsPreload=true"
+      - "traefik.http.middlewares.headers-umami.headers.frameDeny=true"
+      - "traefik.http.middlewares.headers-umami.headers.browserXssFilter=true"
+      - "traefik.http.middlewares.headers-umami.headers.contentTypeNosniff=true"
+      - "traefik.http.middlewares.headers-umami.headers.referrerPolicy=no-referrer"
+      - "traefik.http.middlewares.headers-umami.headers.featurePolicy=accelerometer 'none'; autoplay 'none'; camera 'none'; encrypted-media 'none'; fullscreen 'self'; geolocation 'none'; gyroscope 'none'; magnetometer 'none'; microphone 'none'; payment 'none'; usb 'none'"
+      - "traefik.http.middlewares.headers-umami.headers.customResponseHeaders.Content-Security-Policy=default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self'; img-src 'self' data: https:; font-src 'self' data: https:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests;"
+    networks:
+      - proxy_mother
+
+  umami-db:
+    image: postgres:18-alpine
+    container_name: umami-db
+    env_file: .env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - umami-db-data:/var/lib/postgresql
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - proxy_mother
+
+volumes:
+  umami-db-data:
+
+networks:
+  proxy_mother:
+    external: true
