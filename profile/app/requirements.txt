@@ -1,7 +1,0 @@
-flask
-gunicorn
-jsonify
-jinja2
-Flask-SQLAlchemy
-python-dotenv
-psycopg2-binary
