@@ -1,19 +1,19 @@
 #!/usr/bin/bash
 
-########### Confirmation ###############
+# Usage Confirmation
 echo -e "Usage: $0 username hostname\n"
 read -p "Continue? [y/N]: " choice
 if [ "$choice" != 'y' ] && [ "$choice" != 'Y' ]; then
     exit 1
 fi
 
-########### Update package repository index and install updates #################
+# Update package repository index and install updates
 printf "\n\nUpdating....\n"
 apt update -y && apt dist-upgrade -y
 
-########### Package Installation ###############
+# Base Package Installation
 printf "\n\nInstalling base packages....\n"
-apt install curl git build-essential ncdu tmux vim zoxide htop fzf -y
+apt install curl git build-essential ncdu vim zoxide fzf trash-cli ufw -y
 echo 'eval "$(zoxide init --cmd cd bash)' >>/root/.bashrc
 
 printf "\n\nSetting fail2ban...\n"
@@ -28,7 +28,7 @@ printf "Done. Config files:\n\t/etc/fail2ban/fail2ban.local\n\t/etc/fail2ban/jai
 printf "\n\nCerbot installation...\n"
 apt install certbot -y
 
-########## Hostname Update ###################
+# Hostname Update
 printf "\n\nHostname Setup...\n"
 if [ -n "$2" ]; then
     hostnamectl set-hostname "$2"
@@ -38,13 +38,14 @@ else
     echo -e "Hostname unchanged"
 fi
 
-########## User Setup ###################
+# User Setup
 printf "\n\nSetting new user: $1...\n"
 if [ -n "$1" ]; then
-    useradd -m -G sudo "$1 -s bash"
+    useradd -m -G sudo "$1" -s bash
     passwd "$1"
     if [ "$?" -eq 0 ]; then
-        echo "Success."
+        echo "User was added with sudo privelages..."
+        echo -e "\e[32mSuccess.[0m"
     else
         echo "passwd exit status: $?"
     fi
@@ -53,7 +54,7 @@ else
     echo "No user added!"
 fi
 
-########## unattended Updates & Upgrades ############
+# unattended Updates & Upgrades
 printf "\n\nInstalling unattended-upgrades....\n"
 apt install unattended-upgrades -y
 
@@ -63,7 +64,7 @@ systemctl restart unattended-upgrades
 printf "Done. Configure more at: \n\t/etc/apt/apt.conf.d/20auto-upgrades\n\t"
 printf "/etc/apt/apt.conf.d/unattended-upgrades\n"
 
-########## SSH Configuration ############
+# SSH Configuration
 printf "\n\nConfiguring OpenSSH Server....\n"
 apt install openssh-server -y
 systemctl enable sshd 2>/dev/null || systemctl enable ssh
@@ -101,19 +102,27 @@ if command -v systemctl 1>/dev/null 2>&1; then
     systemctl reload ssh 2>/dev/null || systemctl restart ssh
 fi
 
-############ Final Reboot #######################
+# Some additional package setup
+printf "\nInstallating additional required packages...\n"
+apt install tmux speedtest-cli tree htop
+
+printf "\n\nUpdating bashrc..."
+cp .config/.bashrc /root/.bashrc /home/"$1"/.bashrc
+
+# Final Reboot
 printf "\n\nServer Setup Complete..\n"
 unset choice
 read -p "Reboot now? [y/N]: " choice
 if [ "$choice" != 'y' ] && [ "$choice" != 'Y' ]; then
-    echo "Further steps: "
-    printf "\t1. Lock your root account.\n"
-    printf "\t2. Install any other required packages.\n"
-    printf "\t3. Customize your jail.local and fail2ban.local files.\n"
-    printf "\t4. Setup firewall rules.\n"
-    printf "\t5. Customize your unattended-upgrades to automatically remove unused packages.\n"
-    printf "\t6. !! Reboot !! after.\n"
-    exit 0
+    echo "Rebooting..."
+    reboot now
 fi
-echo "Rebooting..."
-reboot now
+
+echo "Further steps: "
+printf "\t1. Lock your root account.\n"
+printf "\t2. Install any other required packages.\n"
+printf "\t3. Customize your jail.local and fail2ban.local files.\n"
+printf "\t4. Setup firewall rules.\n"
+printf "\t5. Customize your unattended-upgrades to automatically remove unused packages.\n"
+printf "\t6. !! Reboot !!.\n"
+exit 0
