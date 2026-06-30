@@ -22,6 +22,7 @@ services:
       - "traefik.http.routers.tea.entrypoints=websecure"
       - "traefik.http.routers.tea.tls=true"
       - "traefik.http.routers.tea.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.tea.tls.options=default"
       - "traefik.http.services.tea.loadbalancer.server.port=8923"
       - "traefik.http.routers.tea.middlewares=headers-tea@docker"
       - "traefik.http.middlewares.headers-tea.headers.stsSeconds=31536000"

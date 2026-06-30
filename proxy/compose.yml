@@ -13,11 +13,14 @@ services:
       # named volume mount for traefik to store the certificates.
       - traefik-certs:/letsencrypt
       - "./var/:/var/log/traefik/"
+      - "./dynamic:/dynamic:ro"
     command:
       # Providers
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--providers.docker.network=proxy_mother"
+      - "--providers.file.directory=/dynamic"
+      - "--providers.file.watch=true"
 
       # EntryPoints
       - "--entrypoints.web.address=:80"
@@ -49,6 +52,7 @@ services:
       - "traefik.http.routers.dashboard.service=api@internal"
       - "traefik.http.routers.dashboard.tls.certresolver=letsencrypt"
       - "traefik.http.routers.dashboard.tls=true"
+      - "traefik.http.routers.dashboard.tls.options=default"
       # Basic‑auth middleware
       - "traefik.http.middlewares.dashboard-auth.basicauth.users=admin:$2a$10$4u6Gl8Yxjs2WyHEPGDeFBOottuPco54redvsb8wa80dWlOm.7qGpm"
       - "traefik.http.routers.dashboard.middlewares=dashboard-auth@docker,headers-dashboard@docker"

@@ -22,6 +22,7 @@ services:
       - "traefik.http.routers.beszel.entrypoints=websecure"
       - "traefik.http.routers.beszel.tls=true"
       - "traefik.http.routers.beszel.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.beszel.tls.options=default"
       - "traefik.http.services.beszel.loadbalancer.server.port=8923"
       - "traefik.http.routers.beszel.middlewares=headers-beszel@docker"
       - "traefik.http.middlewares.headers-beszel.headers.stsSeconds=31536000"

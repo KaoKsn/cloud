@@ -43,6 +43,7 @@ services:
       - "traefik.http.routers.searxng.entrypoints=websecure"
       - "traefik.http.routers.searxng.tls=true"
       - "traefik.http.routers.searxng.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.searxng.tls.options=default"
       - "traefik.http.services.searxng.loadbalancer.server.port=8000"
       # Headers Middleware
       - "traefik.http.routers.searxng.middlewares=headers-searxng@docker"
